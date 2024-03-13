@@ -1,8 +1,8 @@
-//- encapsulation :
+//- encapsulation : when grouping a class togther with its methods
 //- inheritance: uses extend so subclass has same properties as superclass
-//- polymorphism
+//- polymorphism: overloading/overiding methods
 
-1; //
+// 1.
 class Book {
   title;
   author;
@@ -14,20 +14,19 @@ class Book {
     this.yearPublished = yearPublished;
   }
 
-  getsummary() {
-    return `${this.title} is written by ${this.author} and published in ${yearPublished}`;
+  getSummary() {
+    return `${this.title} is written by ${this.author} and published in ${this.yearPublished}`;
   }
 }
 
-const ulysses = new Book("Uslysses", "james joyce", "1922");
-// console.log(ulysses.getsummary());
+const ulysses = new Book("Ulysses", "James Joyce", "1922");
+// console.log(ulysses.getSummary());
 
 // 2.
-class Recatangle {
+class Rectangle {
   width;
   height;
-
-  constructor(width, height) {
+  constructor(w, h) {
     this.width = w;
     this.height = h;
   }
@@ -42,7 +41,7 @@ class Recatangle {
 }
 
 // 3.
-class Vechile {
+class Vehicle {
   make;
   model;
   year;
@@ -52,85 +51,98 @@ class Vechile {
     this.model = model;
     this.year = year;
   }
-
   getInfo() {
-    return `${this.make}, is for ${this.model}, made in ${this.year}`;
+    return this.make + " " + this.model + " " + this.year;
   }
 }
-class Car extends vehicle {
+
+class Car extends Vehicle {
+  numDoors;
+
   constructor(make, model, year, numDoors) {
     super(make, model, year);
     this.numDoors = numDoors;
   }
-
   getInfo() {
-    return `${super.getinfo}, amount of ${this.numDoors}`;
+    return this.make + " " + this.model + " " + this.year + " " + this.numDoors;
   }
 }
-class Truck extends Vehicle {
-  construction(make, model, year, loadCapicity) {
-    super(make, model, year);
-    this.loadCapicity = loadCapicity;
-  }
-}
-  getInfo(){
-    return `${super.getInfo}, ${this.loadCapicity}`;
-  }
 
-  // 4. 
+// 4.
+class Employee {
+  #id;
+  #name;
+  #email;
 
-  class Employee {
-    #name
-    #id
-    #email
-     
-    constructor(name,id, email) {
-      this.#name = name;
-      this.#id = id;
-      this.#email = email;
-    }
-  
-  getName () {
-    return this.#name;
+  constructor(id, n, e) {
+    this.#id = id;
+    this.#name = n;
+    this.#email = e;
   }
 
-  getId () {
+  greet() {
+    console.log(`Hi my name is ${this.#name}`);
+  }
+  getId() {
     return this.#id;
   }
-
-  getEmail (){
-    return this.#email;
+  getName() {
+    return this.#name;
   }
-  } 
+}
 
-  class Crewmember extends Employee {
-    #manager;
-     constructor(name,id, email, manager) {
-      super (name, id, email);
-      this.#manager = manager
-     }
-  
+class CrewMember extends Employee {
+  #manager;
+  constructor(id, n, e) {
+    super(id, n, e);
+  }
   getManager() {
     return this.#manager;
   }
-
-  setManager(manager) {
-    this.#manager = manager;
+  setManager(m) {
+    if (!(m instanceof Manager)) return;
+    this.#manager = m;
   }
 }
- class Manager extends Employee {
-  #subordinates;
-  constructor(name, id, email){
-    super(name, id, email);
-    this.#subordinates = subordinates
-  }
-  getSubordinates () {
-    return this.#subordinates
-  }
-  addSubordinates (employee) {
-    this.#subordinates.push(employee);
-  }
-  removeSubordinates(employee) {
 
+class Manager extends Employee {
+  #subordinates;
+  constructor(id, n, e) {
+    super(id, n, e);
+    this.#subordinates = new Set();
   }
- }
+  getSubordinates() {
+    return this.#subordinates;
+  }
+  addSubordinates(...subs) {
+    subs.forEach((sub) => {
+      this.#subordinates.add(sub);
+      sub.setManager(this);
+    });
+  }
+  removeSubordinate(removeSub) {
+    // this.#subordinates = this.#subordinates.filter((sub) => sub.getId() !== removeSub.getId());
+    this.#subordinates.delete(removeSub);
+  }
+}
+
+const m = new Manager(155, "Harshil", "h@email.com");
+console.log("manager", m.getSubordinates());
+
+const c1 = new CrewMember(1, "Juan", "j@email.com");
+const c2 = new CrewMember(2, "Anita", "a@email.com");
+const c3 = new CrewMember(3, "Tai", "t@email.com");
+
+m.addSubordinates(c1, c2, c3);
+m.getSubordinates().forEach((s) =>
+  console.log(`employee: ${s.getName()} - manager: ${s.getManager().getName()}`)
+);
+
+// m.addSubordinates(c3);
+// m.getSubordinates().forEach((s) => console.log(`employee: ${s.getName()} - manager: ${s.getManager().getName()}`));
+
+// m.removeSubordinate(c3);
+// m.getSubordinates().forEach((s) => console.log(`employee: ${s.getName()} - manager: ${s.getManager().getName()}`));
+
+c3.setManager(c1);
+console.log(c3.getManager().getName());
